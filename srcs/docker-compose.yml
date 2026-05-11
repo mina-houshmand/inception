@@ -1,0 +1,54 @@
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    ports:
+      - "8443:443"
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    restart: always
+
+  wordpress:
+    build: ./requirements/wordpress
+    env_file:
+      - .env
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - mariadb
+    networks:
+      - inception
+    restart: always
+
+  mariadb:
+    build: ./requirements/mariadb
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - inception
+    restart: always
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mhoushma/data/wordpress
+      o: bind
+
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mhoushma/data/mariadb
+      o: bind
+
+networks:
+  inception:
+    driver: bridge
