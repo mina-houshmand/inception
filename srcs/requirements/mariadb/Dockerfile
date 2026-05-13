@@ -1,12 +1,18 @@
 FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y mariadb-server
+RUN apt-get update && apt-get install -y \
+    mariadb-server \
+	mariadb-client \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-COPY tools/setup.sh /setup.sh
+COPY conf/server.conf /etc/mysql/mariadb.conf.d/server.conf
 
-RUN chmod +x /setup.sh
+COPY tools/script.sh /script.sh
+RUN chmod +x /script.sh
+
+
+RUN install -d -m 755 -o mysql -g mysql /run/mysqld
 
 EXPOSE 3306
 
-ENTRYPOINT ["/setup.sh"]
+CMD ["/script.sh"]

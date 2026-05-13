@@ -1,54 +1,68 @@
-
 services:
   nginx:
     build: ./requirements/nginx
-    ports:
-      - "8443:443"
-    volumes:
-      - wordpress_data:/var/www/html
+    container_name: nginx
     depends_on:
       - wordpress
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+    restart: unless-stopped
     networks:
-      - inception
-    restart: always
+      - inception_network
+    env_file:
+      - .env
 
   wordpress:
     build: ./requirements/wordpress
-    env_file:
-      - .env
-    volumes:
-      - wordpress_data:/var/www/html
+    container_name: wordpress
     depends_on:
       - mariadb
+    volumes:
+      - wordpress:/var/www/html
+      - ../secrets:/var/secrets:ro
+    restart: unless-stopped
     networks:
-      - inception
-    restart: always
+      - inception_network
+    env_file:
+      - .env
 
   mariadb:
     build: ./requirements/mariadb
+    container_name: mariadb
+    volumes:
+      - mariadb:/var/lib/mysql
+      - ../secrets:/var/secrets:ro
+    restart: unless-stopped
+    networks:
+      - inception_network
     env_file:
       - .env
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - inception
-    restart: always
+
+# volumes:
 
 volumes:
-  wordpress_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/mhoushma/data/wordpress
-      o: bind
+  mariadb:
+    name: mariadb
 
-  db_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/mhoushma/data/mariadb
-      o: bind
+  wordpress:
+    name: wordpress
+  # wordpress:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: ${HOME:-${USER}}/data/wordpress
+  # mariadb:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: ${HOME:-${USER}}/data/mariadb
 
+# networks:
 networks:
-  inception:
+  inception_network:
     driver: bridge
