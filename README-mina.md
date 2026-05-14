@@ -218,7 +218,10 @@ Container 3 -> MariaDB
 Each container has its own environment.
 
 ---
-
+we seperate each service like backend-database-frontend in seperated container
+so we need to run each container separately and connect those containers together.
+so we use docker compose
+we have services in the compose.yaml file and inside that we have services that we put containers that we wanna run together
 # Why Docker Compose is used
 
 Docker Compose helps start all containers together.
