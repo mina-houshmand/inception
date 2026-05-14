@@ -1,38 +1,50 @@
-COMPOSE_FILE = srcs/docker-compose.yml
-BONUS_COMPOSE_FILE = srcs/docker-compose.bonus.yml
-DATA_DIR = /home/$(USER)/data
+all: up
 
-all: build up
-BONUS = -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE)
-
-
-build:
-	@mkdir -p $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb
-	@docker compose -f $(COMPOSE_FILE) build
-
+# create parent directories if they don't exist
+# do not throw an error if the directory already exists
 up:
-	@docker compose -f $(COMPOSE_FILE) up -d
-
-bonus:
-	@docker compose -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE) up --build -d
+	@mkdir -p /home/$(USER)/data/wordpress
+	@mkdir -p /home/$(USER)/data/mariadb
+	# docker compose → uses the compose system
+	# up → starts the services
+	# --build → builds images before starting
+	# -f → use the following docker compose file
+	# -d → Runs containers in the background
+	@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 down:
-	@docker compose -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE) down
+	@docker compose -f ./srcs/docker-compose.yml down
 
+stop:
+	@docker compose -f ./srcs/docker-compose.yml stop
+
+start:
+	@docker compose -f ./srcs/docker-compose.yml start
+
+# Stops and removes the containers
+# removes attached Docker volumes
+# --remove-orphans → Removes containers not defined in the current compose file.
 clean: down
-	@docker compose -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE) down --volumes --remove-orphans
+	@docker compose -f ./srcs/docker-compose.yml down --volumes --remove-orphans
+	# prune → Removes unused Docker data
+	# -a → Also removes unused images
+	# -f → Forces cleanup without asking for confirmation.
 	@docker system prune -af
 
 fclean: clean
-	@sudo rm -rf $(DATA_DIR)
+	@sudo rm -rf /home/$(USER)/data
 	@docker volume prune -f
 
 re: fclean all
 
+#shows live container logs
 logs:
-	@docker compose -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE) logs -f
+	@docker compose -f ./srcs/docker-compose.yml logs -f
 
+#shows running containers and their state
 status:
-	@docker compose -f $(COMPOSE_FILE) -f $(BONUS_COMPOSE_FILE) ps
+	@docker compose -f ./srcs/docker-compose.yml ps
 
-.PHONY: all build up bonus down clean fclean re logs status
+# Prevents conflicts with files having the same names as targets
+# ignores files with same names and always executes the commands.
+.PHONY: all up down stop start clean fclean re logs status
