@@ -30,4 +30,4 @@ RUN chmod +x /entrypoint.sh
 
 WORKDIR /var/www/html
 
-ENTRYPOINT ["bash", "/entrypoint.sh"]y
+ENTRYPOINT ["bash", "/entrypoint.sh"]
