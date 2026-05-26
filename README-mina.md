@@ -60,8 +60,7 @@ Now let’s explain this in simple words.
 Example:
 
 ```text id="6c6v4u"
-https://oshcheho.42.fr
-```
+https://mhoushma.42.fr```
 
 The browser sends a request to your server asking:
 
