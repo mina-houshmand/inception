@@ -1,6 +1,7 @@
 services:
   db:
     build: ./requirements/mariadb
+    image: db
     container_name: db
     restart: always
     volumes:
@@ -12,6 +13,7 @@ services:
 
   site:
     build: ./requirements/wordpress
+    image: site
     container_name: site
     restart: always
     volumes:
@@ -25,6 +27,7 @@ services:
 
   nginx:
     build: ./requirements/nginx
+    image: nginx
     container_name: nginx
     ports:
       - "443:443"
