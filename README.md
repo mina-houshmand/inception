@@ -99,12 +99,12 @@ MARIADB_HOST=mariadb
 WP_PATH=https://falberti.42.fr
 WP_TITLE=My Inception Project
 WP_ADMIN_USER=falberti42
-WP_ADMIN_PASS=supersecure
+WP_ADMIN_PASS=Admin
 WP_ADMIN_EMAIL=falberti@42.fr
 
 WP_USER=aavduli
 WP_USER_EMAIL=aavdul@42.fr
-WP_USER_PWD=supersecure
+WP_USER_PWD=Admin
 ```
 
 ---
