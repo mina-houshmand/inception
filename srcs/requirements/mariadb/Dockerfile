@@ -1,18 +1,20 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y \
-    mariadb-server \
-	mariadb-client \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt upgrade -y && \
+    apt install -y mariadb-server tini && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY conf/server.conf /etc/mysql/mariadb.conf.d/server.conf
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
-COPY tools/script.sh /script.sh
-RUN chmod +x /script.sh
+RUN mkdir -p /run/mysqld && \
+    chown -R mysql:mysql /run/mysqld
 
-
-RUN install -d -m 755 -o mysql -g mysql /run/mysqld
+COPY tools/setup_mariadb.sh /tmp/setup_mariadb.sh
+RUN chmod +x /tmp/setup_mariadb.sh
 
 EXPOSE 3306
 
-CMD ["/script.sh"]
+# Use tini as init system (BEST PRACTICE)
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+CMD ["/tmp/setup_mariadb.sh"]

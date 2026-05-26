@@ -1,8 +1,3 @@
-# Docker runtime data
-/data/
-
-# Generated secrets / certificates
+.env
 /secrets/*
-
-# Logs
-*.log
+.DS_Store

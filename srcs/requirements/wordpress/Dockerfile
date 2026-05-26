@@ -1,34 +1,33 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
-RUN apt update && apt install -y \
-	php7.4-fpm \
-	php7.4-mysqli \
-	php7.4-redis \
-	redis-tools \
-	mariadb-client \
-	ftp \
-	curl \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y wget curl bash php php-fpm php-mysql mariadb-client && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install PHP CLI for WP-CLI and other CLI tools
-RUN apt-get update && apt-get install -y \
-    php-cli \
-    php-xml \
-    && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /run/php /var/www/html
 
-COPY www.conf /etc/php/7.4/fpm/pool.d/
+# Download WordPress
+RUN wget https://fr.wordpress.org/wordpress-6.0-fr_FR.tar.gz -P /var/www && \
+    tar -xzf /var/www/wordpress-6.0-fr_FR.tar.gz -C /var/www && \
+    rm /var/www/wordpress-6.0-fr_FR.tar.gz
 
-COPY ./tools/script.sh .
-RUN chmod +x script.sh
+# Move WordPress into correct folder
+RUN mv /var/www/wordpress/* /var/www/html/
 
-RUN mkdir -p /var/www/html /run/php
-RUN chown -R www-data:www-data /var/www/html /run/php
+# Permissions
+RUN chown -R www-data:www-data /var/www/html
 
-# Install WP-CLI
-RUN curl -sSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp \
-	&& chmod +x /usr/local/bin/wp
+# PHP-FPM config
+RUN sed -i 's|^listen = .*|listen = 9000|' /etc/php/*/fpm/pool.d/www.conf
 
-EXPOSE 9000
+# WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
 
-CMD ["./script.sh"]
+COPY conf/auto_config.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
+WORKDIR /var/www/html
+
+ENTRYPOINT ["bash", "/entrypoint.sh"]y
