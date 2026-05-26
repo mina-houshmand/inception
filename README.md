@@ -90,7 +90,7 @@ DOMAIN_NAME=falberti.42.fr
 
 # DATABASE
 MARIADB_DATABASE=wordpress_db
-MARIADB_USER=wpuser
+MARIADB_USER=wordpress-user
 MARIADB_PASSWORD=wppass
 MARIADB_ROOT_PASSWORD=rootpass
 MARIADB_HOST=mariadb
@@ -138,12 +138,12 @@ docker ps
 ### Check MariaDB connectivity
 ```bash
 docker exec -it mariadb mariadb -uroot -prootpass -e "SHOW DATABASES;"
-docker exec -it mariadb mariadb -uwpuser -pwppass wordpress_db -e "SHOW TABLES;"
+docker exec -it mariadb mariadb -wordpress-user -pwppass wordpress_db -e "SHOW TABLES;"
 ```
 
 ### Check WordPress users
 ```bash
-docker exec -it mariadb mariadb -uwpuser -pwppass wordpress_db -e "SELECT ID, user_login FROM wp_users;"
+docker exec -it mariadb mariadb -wordpress-user -pwppass wordpress_db -e "SELECT ID, user_login FROM wp_users;"
 ```
 
 ### Check NGINX SSL

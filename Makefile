@@ -1,7 +1,8 @@
 all: up
 
+#--force-recreate tells Docker Compose to destroy and recreate the containers every time you run
 up:
-	docker compose -f ./srcs/docker-compose.yml up -d
+	docker compose -f ./srcs/docker-compose.yml up -d --build --force-recreate
 
 down:
 	docker compose -f ./srcs/docker-compose.yml down

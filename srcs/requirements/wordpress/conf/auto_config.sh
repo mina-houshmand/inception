@@ -42,6 +42,12 @@ else
     echo "🔁 WordPress already configured — skipping installation."
 fi
 
+echo "📝 Ensuring site title matches the environment..."
+CURRENT_TITLE=$(wp option get blogname --allow-root)
+if [ "${CURRENT_TITLE}" != "${WP_TITLE}" ]; then
+    wp option update blogname "${WP_TITLE}" --allow-root
+fi
+
 # Fix permissions
 chown -R www-data:www-data /var/www/html
 

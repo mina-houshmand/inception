@@ -43,6 +43,28 @@ else
     echo "🔁 Existing MariaDB data found — skipping initialization."
 fi
 
+echo "🛠 Ensuring database users and privileges match the current environment..."
+mysqld --user=mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
+temp_pid=$!
+
+for i in {30..0}; do
+    if mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -S /run/mysqld/mysqld.sock -e "SELECT 1;" >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+
+mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -S /run/mysqld/mysqld.sock <<-EOSQL
+CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;
+CREATE USER IF NOT EXISTS \`${MARIADB_USER}\`@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';
+ALTER USER \`${MARIADB_USER}\`@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO \`${MARIADB_USER}\`@'%';
+FLUSH PRIVILEGES;
+EOSQL
+
+mysqladmin -u root -p"${MARIADB_ROOT_PASSWORD}" -S /run/mysqld/mysqld.sock shutdown
+wait "$temp_pid" || true
+
 echo "🚀 Starting MariaDB in foreground..."
 exec mysqld --user=mysql --console
 
