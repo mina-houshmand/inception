@@ -1,4 +1,28 @@
 services:
+  db:
+    build: ./requirements/mariadb
+    container_name: db
+    restart: always
+    volumes:
+      - /home/mina/data/mariadb:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - inception_net
+
+  site:
+    build: ./requirements/wordpress
+    container_name: site
+    restart: always
+    volumes:
+      - /home/mina/data/wordpress:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - inception_net
+
   nginx:
     build: ./requirements/nginx
     container_name: nginx
@@ -8,34 +32,10 @@ services:
     volumes:
       - /home/mina/data/wordpress:/var/www/html
     depends_on:
-      - wordpress
+      - site
     networks:
-      - inception_network
-
-  wordpress:
-    build: ./requirements/wordpress
-    container_name: wordpress
-    restart: always
-    volumes:
-      - /home/mina/data/wordpress:/var/www/html
-    env_file:
-      - .env
-    depends_on:
-      - mariadb
-    networks:
-      - inception_network
-
-  mariadb:
-    build: ./requirements/mariadb
-    container_name: mariadb
-    restart: always
-    volumes:
-      - /home/mina/data/mariadb:/var/lib/mysql
-    env_file:
-      - .env
-    networks:
-      - inception_network
+      - inception_net
 
 networks:
-  inception_network:
+  inception_net:
     driver: bridge
