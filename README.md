@@ -27,8 +27,7 @@ inception/
 │   │   ├── nginx/
 │   │   │   ├── Dockerfile
 │   │   │   └── conf/
-│   │   │       ├── nginx.conf
-│   │   │       └── default.conf
+│   │   │       └── nginx.conf
 │   │   ├── wordpress/
 │   │   │   ├── Dockerfile
 │   │   │   └── conf/
