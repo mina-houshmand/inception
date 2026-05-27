@@ -51,8 +51,6 @@ WordPress
 MariaDB
 ```
 
-Now let’s explain this in simple words.
-
 ---
 
 # Step 1 — User opens the website
