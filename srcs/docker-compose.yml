@@ -25,7 +25,8 @@ services:
     networks:
       - inception_net
 
-  # nginx is intentionally isolated in its own container; this service is WordPress/PHP-FPM only.
+  # nginx is intentionally isolated in its own container; this service is 
+  # WordPress/PHP-FPM only.
   nginx:
     build: ./requirements/nginx
     image: nginx
@@ -51,11 +52,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/mina/data/wordpress
+      device: /home/mhoushma/data/wordpress
   mariadb:
     name: mariadb
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/mina/data/mariadb
+      device: /home/mhoushma/data/mariadb
+
+# named volumes are backed by the local driver with host paths under /home/mhoushma/data

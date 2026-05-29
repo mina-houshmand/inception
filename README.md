@@ -11,7 +11,7 @@ The goal is to create a small, self-contained infrastructure composed of three s
 
 Each service runs inside its own Docker container, built **from a custom Debian base image**, without any prebuilt images.
 
-All data is stored persistently inside `/home/<login>/data/` using **bind mounts**.
+All data is stored persistently inside `/home/mhoushma/data/` using **named volumes backed by the local driver**.
 
 ---
 
@@ -54,7 +54,7 @@ inception/
 - Redirects PHP requests to the **WordPress container** on port `9000`
 - Volume:
   ```
-  /home/<login>/data/wordpress → /var/www/html
+  /home/mhoushma/data/wordpress → /var/www/html
   ```
 
 ### 🧩 WordPress (PHP-FPM)
@@ -64,7 +64,7 @@ inception/
 - Connects to the **MariaDB** container using environment variables
 - Volume:
   ```
-  /home/<login>/data/wordpress → /var/www/html
+  /home/mhoushma/data/wordpress → /var/www/html
   ```
 
 ### 🧩 MariaDB
@@ -74,7 +74,7 @@ inception/
 - Listens on port `3306` within Docker network
 - Volume:
   ```
-  /home/<login>/data/mariadb → /var/lib/mysql
+  /home/mhoushma/data/mariadb → /var/lib/mysql
   ```
 
 ---
@@ -85,7 +85,7 @@ All environment variables are stored in the `.env` file:
 
 ```bash
 # DOMAIN
-DOMAIN_NAME=falberti.42.fr
+DOMAIN_NAME=mhoushma.42.fr
 
 # DATABASE
 MARIADB_DATABASE=wordpress_db
@@ -95,14 +95,14 @@ MARIADB_ROOT_PASSWORD=rootpass
 MARIADB_HOST=mariadb
 
 # WORDPRESS
-WP_PATH=https://falberti.42.fr
+WP_PATH=https://mhoushma.42.fr
 WP_TITLE=My Inception Project
-WP_ADMIN_USER=falberti42
+WP_ADMIN_USER=mhoushma42
 WP_ADMIN_PASS=Admin
-WP_ADMIN_EMAIL=falberti@42.fr
+WP_ADMIN_EMAIL=mhoushma@42.fr
 
-WP_USER=aavduli
-WP_USER_EMAIL=aavdul@42.fr
+WP_USER=sina
+WP_USER_EMAIL=sina@42.fr
 WP_USER_PWD=Admin
 ```
 
@@ -147,7 +147,7 @@ docker exec -it mariadb mariadb -wordpress-user -pwppass wordpress_db -e "SELECT
 
 ### Check NGINX SSL
 ```bash
-curl -vk https://falberti.42.fr
+curl -vk https://mhoushma.42.fr
 ```
 
 ### Check PHP-FPM
@@ -159,7 +159,7 @@ docker exec -it wordpress ss -tulnp | grep 9000
 
 ## 💾 Data Persistence
 
-The project uses **bind mounts**, not Docker volumes.  
+The project uses **named volumes** backed by the local driver, with data stored on the host under `/home/mhoushma/data`.  
 You can verify this with:
 
 ```bash
@@ -167,10 +167,17 @@ docker volume ls         # (should be empty)
 ls -la /home/falberti/data
 ```
 
+WordPress files: wordpress volume
+WordPress database: mariadb volume
+
+“WordPress files and the WordPress database are stored in two different persistent places. The WordPress container writes the website files to the wordpress volume, and the MariaDB container writes the database files to the mariadb volume. That way, if a container stops or gets rebuilt, the data is still kept on the host.”
+
+“WordPress files and the WordPress database are stored in two different persistent places. The WordPress container writes the website files to the wordpress volume, and the MariaDB container writes the database files to the mariadb volume. That way, if a container stops or gets rebuilt, the data is still kept on the host.”
+
 | Service | Container Path | Host Path |
 |----------|----------------|------------|
-| WordPress | `/var/www/html` | `/home/falberti/data/wordpress` |
-| MariaDB | `/var/lib/mysql` | `/home/falberti/data/mariadb` |
+| WordPress | `/var/www/html` | `/home/mhoushma/data/wordpress` |
+| MariaDB | `/var/lib/mysql` | `/home/mhoushma/data/mariadb` |
 
 This ensures that data persists after container restarts or rebuilds.
 
@@ -184,7 +191,7 @@ This ensures that data persists after container restarts or rebuilds.
 - [x] WordPress accessible via HTTPS  
 - [x] MariaDB initialized and persistent  
 - [x] NGINX ↔ PHP-FPM ↔ MariaDB chain functional  
-- [x] Volumes stored in `/home/<login>/data`  
+- [x] Volumes stored in `/home/mhoushma/data`  
 - [x] No usage of prebuilt images  
 - [x] Clean Makefile and Docker Compose workflow  
 
