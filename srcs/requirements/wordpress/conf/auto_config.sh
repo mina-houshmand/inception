@@ -51,5 +51,6 @@ fi
 # Fix permissions
 chown -R www-data:www-data /var/www/html
 
+# Keep this container focused on WordPress + php-fpm; nginx runs in a separate service.
 echo "🚀 Starting PHP-FPM..."
 exec php-fpm8.2 -F

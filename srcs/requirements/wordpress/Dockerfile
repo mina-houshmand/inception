@@ -1,5 +1,6 @@
 FROM debian:bookworm
 
+# WordPress container: PHP-FPM only, no nginx in this image.
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y wget curl bash php php-fpm php-mysql mariadb-client && \
     rm -rf /var/lib/apt/lists/*
@@ -25,6 +26,7 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
+# Startup script installs/configures WordPress, then runs php-fpm only.
 COPY conf/auto_config.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

@@ -1,6 +1,4 @@
-# Inception — Simple Project Summary
-
-The main idea of this project is to build a small real-world server infrastructure using Docker.
+# Inception 
 
 Instead of installing everything directly on Linux, every service runs inside its own container.
 
@@ -13,24 +11,6 @@ For example:
 * one container runs MariaDB
 
 All containers communicate together through a private Docker network.
-
----
-
-# What is the goal of the project?
-
-The goal is to understand how modern websites are built and managed.
-
-This project teaches:
-
-* how services communicate
-* how Docker works
-* how servers are organized
-* how websites connect to databases
-* how reverse proxy systems work
-* how data is stored permanently
-* how infrastructure is monitored
-
-The project simulates a small production server.
 
 ---
 
@@ -60,9 +40,7 @@ Example:
 ```text id="6c6v4u"
 https://mhoushma.42.fr```
 
-The browser sends a request to your server asking:
-
-> “Please give me the website.”
+The browser sends a request to your server
 
 ---
 
@@ -81,19 +59,11 @@ This means:
 ❌ Browser cannot directly talk to:
 
 * MariaDB
-* Redis
 * WordPress
-* FTP
-* Adminer
-
-This improves security.
 
 ---
 
-# What does “only NGINX is exposed” REALLY mean?
-
-It means:
-
+# only NGINX is exposed
 Only NGINX opens ports to your computer.
 
 For example:
@@ -161,13 +131,6 @@ So it asks the database.
 
 MariaDB stores all website information.
 
-Think of it like storage memory for the website.
-
-WordPress asks:
-
-> “Give me all blog posts.”
-
-MariaDB returns the data.
 
 ---
 
@@ -204,21 +167,14 @@ With Docker:
 * easier to restart
 * cleaner structure
 
-Example:
-
-```text id="vbm1iz"
-Container 1 -> NGINX
-Container 2 -> WordPress
-Container 3 -> MariaDB
-```
 
 Each container has its own environment.
 
 ---
-we seperate each service like backend-database-frontend in seperated container
-so we need to run each container separately and connect those containers together.
+we seperate each service in seperated container, so we need to run each container separately and connect those containers together.
 so we use docker compose
 we have services in the compose.yaml file and inside that we have services that we put containers that we wanna run together
+
 # Why Docker Compose is used
 
 Docker Compose helps start all containers together.
@@ -227,11 +183,9 @@ Instead of starting services one by one:
 
 ```bash id="c26v2h"
 docker run ...
-docker run ...
-docker run ...
 ```
 
-you simply use:
+you use:
 
 ```bash id="mzebt6"
 docker compose up
@@ -253,25 +207,7 @@ Containers need to communicate safely.
 
 Docker creates a private network.
 
-Inside this network:
-
-```text id="v7m3qs"
-WordPress -> MariaDB
-WordPress -> Redis
-NGINX -> WordPress
-```
-
-Containers communicate using service names.
-
-Example:
-
-```text id="0umqjk"
-mariadb
-wordpress
-redis
-```
-
-instead of IP addresses.
+Containers communicate using service names instead of IP addresses.
 
 ---
 
@@ -280,13 +216,7 @@ instead of IP addresses.
 Containers are temporary.
 
 If a container is deleted, its files disappear.
-
-Volumes solve this problem.
-
 Volumes store data permanently outside containers.
-
-Your project uses volumes for:
-
 * WordPress files
 * MariaDB database
 
@@ -323,7 +253,7 @@ Your website uses HTTPS.
 Example:
 
 ```text id="yyh0my"
-https://oshcheho.42.fr
+https://mhoushma.42.fr
 ```
 
 HTTPS encrypts communication between:
@@ -337,96 +267,6 @@ NGINX handles SSL certificates.
 
 ---
 
-# Bonus Services Explained
-
----
-
-# Redis
-
-Redis is used for caching.
-
-Caching means:
-
-> store frequently used data in memory to make the website faster.
-
-Instead of asking MariaDB every time:
-
-```text id="6ho6fn"
-WordPress -> Redis -> fast response
-```
-
-This reduces database load.
-
----
-
-# FTP Server
-
-FTP allows remote file management.
-
-You can:
-
-* upload files
-* edit WordPress files
-* manage content
-
-without entering containers manually.
-
-The FTP container shares the same files as WordPress.
-
----
-
-# Adminer
-
-Adminer is a web interface for MariaDB.
-
-Instead of typing SQL commands manually, you get a graphical interface.
-
-You can:
-
-* view tables
-* edit database rows
-* run SQL queries
-* debug database issues
-
----
-
-# Flask Monitoring Dashboard
-
-This is your custom monitoring system.
-
-Built using:
-
-* Python
-* Flask
-
-It checks whether services are alive.
-
-Example:
-
-```text id="3x4sj2"
-NGINX -> OK
-MariaDB -> OK
-Redis -> OK
-```
-
-This simulates real production monitoring.
-
----
-
-# cAdvisor
-
-cAdvisor monitors Docker containers.
-
-It shows:
-
-* CPU usage
-* RAM usage
-* network usage
-* disk usage
-
-This helps understand container performance.
-
----
 
 # Main Concepts Learned
 
@@ -546,3 +386,20 @@ You created:
 
 All services are separated into containers and connected together like a real production environment.
 
+# What is the goal of the project?
+
+The goal is to understand how modern websites are built and managed.
+
+This project teaches:
+
+* how services communicate
+* how Docker works
+* how servers are organized
+* how websites connect to databases
+* how reverse proxy systems work
+* how data is stored permanently
+* how infrastructure is monitored
+
+The project simulates a small production server.
+
+---

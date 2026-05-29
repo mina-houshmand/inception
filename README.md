@@ -188,15 +188,5 @@ This ensures that data persists after container restarts or rebuilds.
 - [x] No usage of prebuilt images  
 - [x] Clean Makefile and Docker Compose workflow  
 
----
-
-## 👩‍💻 Author
-
-**Gaëlle Floriano (falberti)**  
-42 Lausanne — Common Core  
-📍 Lausanne, Switzerland  
-🗓️ October 2025  
-
----
 
 > 💬 “An image is the recipe — a container is the dish.”
