@@ -1,199 +1,151 @@
-# 🐳 Inception
+*This project has been created as part of the 42 curriculum by mhoushma.*
 
-## 📘 Overview
+# 🐳 Inception — Docker Infrastructure Project
 
-**Inception** is a project from **42** aimed at introducing system administration and containerization using **Docker** and **Docker Compose**.
+## Description
 
-The goal is to create a small, self-contained infrastructure composed of three services:
-- **NGINX** — acts as a reverse proxy and HTTPS web server  
-- **WordPress (PHP-FPM)** — dynamic website backend  
-- **MariaDB** — database server for WordPress
+A system administration project that builds a complete web infrastructure using Docker. Three services (NGINX, WordPress, MariaDB) run in isolated containers and communicate through a private network.
 
-Each service runs inside its own Docker container, built **from a custom Debian base image**, without any prebuilt images.
+**Flow**: Browser → NGINX (443) → WordPress (PHP-FPM) → MariaDB
 
-All data is stored persistently inside `/home/mhoushma/data/` using **named volumes backed by the local driver**.
+### Why Docker?
 
----
+- Services isolated in separate containers
+- Prevents conflicts and crashes
+- Easy to manage, restart, and scale
+- Reproducible environment
 
-## 🏗️ Project Structure
+### Key Concepts
 
-```
-inception/
-├── Makefile
-├── .env
-├── srcs/
-│   ├── docker-compose.yml
-│   ├── requirements/
-│   │   ├── nginx/
-│   │   │   ├── Dockerfile
-│   │   │   └── conf/
-│   │   │       └── nginx.conf
-│   │   ├── wordpress/
-│   │   │   ├── Dockerfile
-│   │   │   └── conf/
-│   │   │       └── auto_config.sh
-│   │   ├── mariadb/
-│   │   │   ├── Dockerfile
-│   │   │   ├── conf/
-│   │   │   │   └── 50-server.cnf
-│   │   │   └── tools/
-│   │   │       └── setup_mariadb.sh
-└── data/
-    ├── wordpress/
-    └── mariadb/
-```
+| Concept | Why Used |
+|---------|----------|
+| **Docker Compose** | Orchestrates all containers together |
+| **Docker Network** | Services communicate via service names, hidden from outside |
+| **Volumes** | Data persists even after containers restart |
+| **HTTPS/SSL** | Encrypts communication between browser and server |
 
 ---
 
-## ⚙️ Services
+## Design Choices
 
-### 🧩 NGINX
-- Built from **Debian:bookworm**
-- Configured to listen only on **port 443**
-- Uses a **self-signed SSL certificate**
-- Redirects PHP requests to the **WordPress container** on port `9000`
-- Volume:
-  ```
-  /home/mhoushma/data/wordpress → /var/www/html
-  ```
+### Docker vs Virtual Machines
 
-### 🧩 WordPress (PHP-FPM)
-- Built from **Debian:bookworm**
-- Installs PHP 8.2, PHP-FPM, and `wp-cli`
-- Automatically installs and configures WordPress on startup
-- Connects to the **MariaDB** container using environment variables
-- Volume:
-  ```
-  /home/mhoushma/data/wordpress → /var/www/html
-  ```
+Docker is lightweight, fast, and sufficient for containerization without the overhead of full OS per container. Services share the Linux kernel, making it ideal for this project.
 
-### 🧩 MariaDB
-- Built from **Debian:bookworm**
-- Initializes database and user on first run
-- Stores data persistently on the host
-- Listens on port `3306` within Docker network
-- Volume:
-  ```
-  /home/mhoushma/data/mariadb → /var/lib/mysql
-  ```
+### Environment Variables vs Secrets
+
+Environment Variables store non-sensitive config (domain, ports, usernames). Secrets should store passwords in production, but here we use `.env` for simplicity.
+
+### Docker Network vs Host Network
+
+Docker Network isolates services internally. Services communicate via service names. Only NGINX exposes ports to the host (443). MariaDB and WordPress remain hidden.
+
+### Named Volumes vs Bind Mounts
+
+Named Volumes store data in `/home/mhoushma/data/` and are Docker-managed. This ensures data persists across container restarts and is portable.
 
 ---
 
-## 🧰 Environment Configuration
+## Services
 
-All environment variables are stored in the `.env` file:
-
-```bash
-# DOMAIN
-DOMAIN_NAME=mhoushma.42.fr
-
-# DATABASE
-MARIADB_DATABASE=wordpress_db
-MARIADB_USER=wordpress-user
-MARIADB_PASSWORD=wppass
-MARIADB_ROOT_PASSWORD=rootpass
-MARIADB_HOST=mariadb
-
-# WORDPRESS
-WP_PATH=https://mhoushma.42.fr
-WP_TITLE=My Inception Project
-WP_ADMIN_USER=mhoushma42
-WP_ADMIN_PASS=Admin
-WP_ADMIN_EMAIL=mhoushma@42.fr
-
-WP_USER=sina
-WP_USER_EMAIL=sina@42.fr
-WP_USER_PWD=Admin
-```
+| Service | Purpose | Port |
+|---------|---------|------|
+| **NGINX** | Reverse proxy, HTTPS entry point | 443 |
+| **WordPress** | Website backend (PHP-FPM) | 9000 (internal) |
+| **MariaDB** | Database, hidden from outside | 3306 (internal) |
 
 ---
 
-## 🚀 Usage
 
-### 1️⃣ Build and start the containers
+---
+
+## Instructions
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Linux system with `/home/mhoushma/` directory
+- Port 443 available
+- Root or sudo access
+
+### Setup & Running
+
+**Build and Start:**
+
 ```bash
 make up
 ```
 
-### 2️⃣ Stop the containers
-```bash
+Stop Containers:
+```
 make down
 ```
 
-### 3️⃣ Clean everything
-```bash
+Full Clean (removes data):
+```
 make fclean
 ```
 
----
-
-## 🔍 Verification Commands
-
-### Check running containers
-```bash
+Access Website:
+```
+https://mhoushma.42.fr
+```
+Verification Commands
+Check running containers:
+```
 docker ps
 ```
 
-### Check MariaDB connectivity
-```bash
+View logs:
+```
+docker-compose logs -f
+```
+
+Access container shell:
+```
+docker exec -it wordpress bash
+```
+
+Check MariaDB:
+```
 docker exec -it mariadb mariadb -uroot -prootpass -e "SHOW DATABASES;"
-docker exec -it mariadb mariadb -wordpress-user -pwppass wordpress_db -e "SHOW TABLES;"
-```
-
-### Check WordPress users
-```bash
-docker exec -it mariadb mariadb -wordpress-user -pwppass wordpress_db -e "SELECT ID, user_login FROM wp_users;"
-```
-
-### Check NGINX SSL
-```bash
-curl -vk https://mhoushma.42.fr
-```
-
-### Check PHP-FPM
-```bash
-docker exec -it wordpress ss -tulnp | grep 9000
 ```
 
 ---
 
-## 💾 Data Persistence
+## Troubleshooting
 
-The project uses **named volumes** backed by the local driver, with data stored on the host under `/home/mhoushma/data`.  
-You can verify this with:
-
-```bash
-docker volume ls         # (should be empty)
-ls -la /home/falberti/data
-```
-
-WordPress files: wordpress volume
-WordPress database: mariadb volume
-
-“WordPress files and the WordPress database are stored in two different persistent places. The WordPress container writes the website files to the wordpress volume, and the MariaDB container writes the database files to the mariadb volume. That way, if a container stops or gets rebuilt, the data is still kept on the host.”
-
-“WordPress files and the WordPress database are stored in two different persistent places. The WordPress container writes the website files to the wordpress volume, and the MariaDB container writes the database files to the mariadb volume. That way, if a container stops or gets rebuilt, the data is still kept on the host.”
-
-| Service | Container Path | Host Path |
-|----------|----------------|------------|
-| WordPress | `/var/www/html` | `/home/mhoushma/data/wordpress` |
-| MariaDB | `/var/lib/mysql` | `/home/mhoushma/data/mariadb` |
-
-This ensures that data persists after container restarts or rebuilds.
+| Issue | Solution |
+|-------|----------|
+| Port 443 in use | `sudo lsof -i :443` then `sudo kill -9 <PID>` |
+| Permission denied | `sudo chown -R $(id -u):$(id -g) /home/mhoushma/data/` |
+| MariaDB won't connect | Wait 15-20s for initialization, check logs |
+| SSL warnings | Normal with self-signed certificates |
+| Containers won't start | Check `.env` file configuration |
 
 ---
 
-## ✅ Evaluation Checklist
 
-- [x] One Dockerfile per service  
-- [x] Custom images built from Debian  
-- [x] SSL enabled and enforced  
-- [x] WordPress accessible via HTTPS  
-- [x] MariaDB initialized and persistent  
-- [x] NGINX ↔ PHP-FPM ↔ MariaDB chain functional  
-- [x] Volumes stored in `/home/mhoushma/data`  
-- [x] No usage of prebuilt images  
-- [x] Clean Makefile and Docker Compose workflow  
+## How AI Was Used
+
+AI tools were primarily utilized for:
+
+1. **Understanding Docker Architecture** — Explained Docker networking concepts, container isolation, and communication patterns between services
+2. **Infrastructure Design** — Helped structure the multi-service architecture and design decisions for reverse proxy, database isolation, and data persistence
+3. **Configuration Assistance** — Generated NGINX reverse proxy configurations, MariaDB initialization scripts, and WordPress auto-setup procedures
+4. **Troubleshooting & Debugging** — Provided commands and solutions for common Docker issues like port conflicts, permission problems, and database connectivity
+5. **Documentation Structure** — Organized README.md following 42 curriculum requirements and best practices for technical documentation
+6. **Code Optimization** — Reviewed Dockerfiles for best practices, layer caching efficiency, and minimal image sizes
+7. **Security Review** — Assisted with SSL/TLS setup, password management strategies, and network isolation verification
+
+---
 
 
-> 💬 “An image is the recipe — a container is the dish.”
+
+
+
+
+
+
+
+
