@@ -1,0 +1,70 @@
+=== INCEPTION PROJECT - EVALUATION ANSWERS ===
+
+1. HOW DOCKER AND DOCKER COMPOSE WORK
+============================================
+
+Q: What is Docker and what problem does it solve?
+A: Docker is a containerization tool that packages applications with all their dependencies (libraries, configs, code) into a single container. Instead of installing software directly on a machine, Docker creates isolated environments that work the same everywhere - on your laptop, server, or cloud.
+
+Q: What does docker compose do and why is it needed?
+A: Docker Compose is a tool that manages multiple Docker containers at once. Instead of running each container separately with long commands, docker-compose.yml defines all services (database, web app, nginx) and their connections in one file. It simplifies managing multi-container applications.
+
+Q: How do they work together in your project?
+A: In Inception, Docker creates 3 isolated containers (MariaDB, WordPress, Nginx). Docker Compose connects them together using a network, shares volumes for persistent data, and manages their startup order and dependencies.
+
+---
+
+2. DOCKER IMAGE WITH vs WITHOUT DOCKER COMPOSE
+==============================================
+
+Q: How would you run a Docker image without docker compose?
+A: Without docker compose, you'd use: docker run -v /path/data:/data -p 3306:3306 mariadb
+This is long and you must run each container separately and connect them manually.
+
+Q: What advantages does docker compose add?
+A: Docker Compose lets you:
+- Define everything in one YAML file
+- Start all containers with one command: docker compose up
+- Automatically create networks between containers
+- Manage volumes easily
+- Handle dependencies (e.g., WordPress waits for MariaDB)
+
+Q: How does your project benefit?
+A: Instead of 3 long docker run commands, you do "make up" and everything starts with proper networking and data persistence automatically.
+
+---
+
+3. DOCKER vs VIRTUAL MACHINES
+=============================
+
+Q: What are the main differences?
+A: VMs (Virtual Machines) are full operating systems running on a hypervisor - they need gigabytes of storage and memory. Docker containers are lightweight - they share the host OS kernel, only containing the application and its dependencies.
+
+Q: Why is Docker lighter/faster than VMs?
+A: VMs boot entire operating systems (slow, heavy). Docker containers start in seconds (lightweight) because they only run your application, not a full OS.
+
+Q: What are the advantages for Inception?
+A: Your project starts instantly, uses minimal resources, and is portable - the same containers run on any machine with Docker installed.
+
+---
+
+4. DIRECTORY STRUCTURE - WHY IS IT ORGANIZED THIS WAY?
+=====================================================
+
+Q: Why do you need a srcs/ folder at the root?
+A: The srcs/ folder keeps all configuration files organized and separate from the root. It contains docker-compose.yml and the Dockerfiles - everything needed to configure the application.
+
+Q: Why is the Makefile at the root?
+A: The Makefile at the root is the entry point. Users run "make up" from the root directory without needing to know where files are located. It's the main interface for managing the project.
+
+Q: Why are Dockerfiles organized inside srcs/requirements/?
+A: This structure is clear and scalable:
+- srcs/requirements/mariadb/Dockerfile (database service)
+- srcs/requirements/wordpress/Dockerfile (PHP-FPM service)
+- srcs/requirements/nginx/Dockerfile (web server)
+Each service has its own folder with Dockerfile and configs, making it easy to find and update individual services.
+
+Q: How does this structure help organize and scale?
+A: If you need to add more services (e.g., Redis cache, Elasticsearch), you just create srcs/requirements/redis/ with its Dockerfile. The structure stays clean and consistent. New developers quickly understand where to find what.
+
+===== END OF ANSWERS =====
