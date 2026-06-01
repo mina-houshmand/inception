@@ -27,4 +27,5 @@ RUN chmod 755 /var/www/html && \
 
 EXPOSE 443
 
+# runs in foreground
 CMD ["nginx", "-g", "daemon off;"]
