@@ -1,4 +1,3 @@
-# Script Initialization
 #!/bin/bash
 set -euo pipefail
 
