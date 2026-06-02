@@ -1,4 +1,5 @@
 #!/bin/bash
+# makes the script fail fast and avoid silent errors.
 set -euo pipefail
 
 # environment validation
@@ -20,7 +21,7 @@ fi
 
 echo "Starting temporary MariaDB server..."
 
-# Start Start Temporary Server in the background .
+# Start Temporary Server in the background .
 mysqld --user=mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
 temp_pid=$!
 
@@ -54,7 +55,7 @@ fi
 
 # Creates WordPress database, user, and grants permissions.
 # if -> Checks if all three variables have values (not empty)
-# t sets up a separate database and user account for WordPress to use, 
+# it sets up a separate database and user account for WordPress to use, 
 # so WordPress doesn't have root access—just access to its own database.
 echo "Ensuring WordPress database and user exist..."
 if [ -n "$MARIADB_DATABASE" ] && [ -n "$MARIADB_USER" ] && [ -n "$MARIADB_PASSWORD" ]; then
