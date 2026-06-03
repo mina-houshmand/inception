@@ -35,7 +35,7 @@ make fclean
 Open the website in a browser with HTTPS:
 
 ```text
-https://<login>.42.fr
+https://mhoushma.42.fr
 ```
 
 Only port 443 should be reachable from outside. HTTP on port 80 should not be used.
@@ -79,9 +79,9 @@ docker logs db
 Use this sequence to verify the project manually during a defense:
 
 1. Run `make up`.
-2. Open `https://<login>.42.fr` in a browser.
+2. Open `https://mhoushma.42.fr` in a browser.
 3. Confirm the WordPress site loads and you do not see the WordPress installation screen.
-4. Try `http://<login>.42.fr` and confirm it does not serve the site.
+4. Try `http://mhoushma.42.fr` and confirm it does not serve the site.
 5. Check that the admin panel can be reached with the administrator account.
 6. Create a comment or edit content from the dashboard to prove the site is writable.
 7. Check that the database and website data remain after restarting the stack.

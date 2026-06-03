@@ -60,8 +60,8 @@ When validating the stack manually, check the following:
 
 1. Start the project with `make up`.
 2. Confirm the containers are up with `docker compose -f srcs/docker-compose.yml ps`.
-3. Open `https://<login>.42.fr` and verify the site loads over HTTPS.
-4. Confirm `http://<login>.42.fr` is not serving the application.
+3. Open `https://mhoushma.42.fr` and verify the site loads over HTTPS.
+4. Confirm `http://mhoushma.42.fr` is not serving the application.
 5. Verify the WordPress installation is already complete.
 6. Log into WordPress as an administrator and confirm the dashboard works.
 7. Add or edit content, then restart the stack and confirm the change remains.

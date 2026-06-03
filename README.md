@@ -24,9 +24,13 @@ A system administration project that builds a complete web infrastructure using 
 | **Volumes** | Data persists even after containers restart |
 | **HTTPS/SSL** | Encrypts communication between browser and server |
 
+Docker Compose lets you:
+- Define everything in one YAML file
+- Start all containers with one command: docker compose up
+- Automatically create networks between containers
+- Manage volumes easily
+- Handle dependencies (e.g., WordPress waits for MariaDB)
 ---
-
-## Design Choices
 
 ### Docker vs Virtual Machines
 
@@ -64,6 +68,12 @@ Named Volumes store data in `/home/mhoushma/data/` and are Docker-managed. This 
 ### Prerequisites
 
 - Docker and Docker Compose installed
+   * Without docker compose, you'd use: 
+    ```
+    docker run -v /path/data:/data -p 3306:3306 mariadb
+    ```
+    This is long and you must run each container separately and connect them manually.
+
 - Linux system with `/home/mhoushma/` directory
 - Port 443 available
 - Root or sudo access
