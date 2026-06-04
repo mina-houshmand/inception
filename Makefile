@@ -7,6 +7,12 @@ volumes:
 	mkdir -p /home/$(shell whoami)/data/mariadb
 
 # brings containers up with volume preparation
+# -v -> Stop containers & Also delete named volumes
+# --remove-orphans -> Removes containers that are defined in the project before but 
+#are no longer in your current docker-compose.yml
+# 2>/dev/null -> silencing any error messages that may occur during the execution 
+# || true -> failure is ignored and Make continues anyway
+# export USER=$(shell whoami) -> Start Docker Compose,pass my username into the environment as USER
 up: volumes
 	docker compose -f srcs/docker-compose.yml down -v --remove-orphans 2>/dev/null || true
 	export USER=$(shell whoami) && docker compose -f srcs/docker-compose.yml up -d

@@ -38,6 +38,11 @@ Open the website in a browser with HTTPS:
 https://mhoushma.42.fr
 ```
 
+log in in with user and admin:
+```
+https://mhoushma.42.fr/wp-admin
+```
+
 Only port 443 should be reachable from outside. HTTP on port 80 should not be used.
 
 ## Access the WordPress Admin Panel
