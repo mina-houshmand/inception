@@ -45,7 +45,11 @@ if ! wp option get siteurl --allow-root >/dev/null 2>&1; then
         --title="${WP_TITLE}" \
         --admin_user="${WP_ADMIN_USER}" \
         --admin_password="${WP_ADMIN_PASS}" \
-        --admin_email="${WP_ADMIN_EMAIL}"
+        --admin_email="${WP_ADMIN_EMAIL}" \
+        --locale=en_US
+
+    wp language core install en_US --allow-root
+    wp site switch-language en_US --allow-root
 else
     echo "✅ WordPress already installed"
 fi

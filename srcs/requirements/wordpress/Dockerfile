@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /run/php /var/www/html
 
 # Download WordPress
-RUN wget https://fr.wordpress.org/wordpress-6.0-fr_FR.tar.gz -P /var/www && \
-    tar -xzf /var/www/wordpress-6.0-fr_FR.tar.gz -C /var/www && \
-    rm /var/www/wordpress-6.0-fr_FR.tar.gz
+RUN wget https://wordpress.org/wordpress-6.0.tar.gz -P /var/www && \
+    tar -xzf /var/www/wordpress-6.0.tar.gz -C /var/www && \
+    rm /var/www/wordpress-6.0.tar.gz
 
 # Move WordPress into correct folder
 RUN mv /var/www/wordpress/* /var/www/html/
