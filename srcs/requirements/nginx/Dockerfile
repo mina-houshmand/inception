@@ -1,12 +1,14 @@
 FROM debian:bookworm
 
-# install dependencies
-RUN apt update && apt upgrade -y && \
-    apt install -y nginx openssl curl vim sudo bash && \
-    rm -rf /var/lib/apt/lists/*
+# Install Nginx and OpenSSL
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y nginx openssl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# create SSL folder
-RUN mkdir -p /etc/nginx/ssl
+
+# Create SSL directory and runtime folder
+RUN install -d -m 700 /etc/nginx/ssl /var/run/nginx
 
 # generate certificate
 RUN openssl req -x509 -nodes -days 365 \
@@ -15,15 +17,14 @@ RUN openssl req -x509 -nodes -days 365 \
   -out /etc/nginx/ssl/inception.crt \
   -subj "/C=CH/ST=VD/L=Vienna/O=42/OU=42/CN=mhoushma.42.fr/UID=mhoushma"
 
-# nginx runtime folder
-RUN mkdir -p /var/run/nginx
 
 # config
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-# permissions
-RUN chmod 755 /var/www/html && \
-    chown -R www-data:www-data /var/www/html
+# Set up website directory
+RUN mkdir -p /var/www/html && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod 755 /var/www/html
 
 EXPOSE 443
 
