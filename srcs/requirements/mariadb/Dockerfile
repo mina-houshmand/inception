@@ -4,17 +4,17 @@ FROM debian:bookworm
 # Install MariaDB server and `tini` — a tiny helper that makes the container
 # stop and clean up child processes correctly when it's told to stop.
 # Remove apt lists to reduce final image size.
-RUN apt-get update && apt-get install -y mariadb-server \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends mariadb-server && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy a custom MariaDB server configuration into the image so the server
 # starts with project-specific settings (charset, networking, etc.).
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# Create `/run/mysqld` and make the `mysql` user the owner so MariaDB can
-# write its socket and PID files there when it starts.
-RUN mkdir -p /run/mysqld && \
-    chown -R mysql:mysql /run/mysqld
+# Prepare runtime directory for MariaDB
+RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
 # Add the project initialization script into the image and make it executable.
 # This script typically creates databases/users and starts the MariaDB server.
