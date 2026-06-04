@@ -52,13 +52,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/wordpress
+      device: /home/mhoushma/data/wordpress
   mariadb:
     name: mariadb
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/mariadb
+      device: /home/mhoushma/data/mariadb
 
 # named volumes are backed by the local driver with host paths under /home/mhoushma/data
