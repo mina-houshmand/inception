@@ -39,17 +39,19 @@ echo "🛠 Checking WordPress installation..."
 if ! wp option get siteurl --allow-root >/dev/null 2>&1; then
     echo "🛠 Installing WordPress..."
 
-    wp core install \
-        --allow-root \
-        --url="${WP_PATH}" \
-        --title="${WP_TITLE}" \
-        --admin_user="${WP_ADMIN_USER}" \
-        --admin_password="${WP_ADMIN_PASS}" \
-        --admin_email="${WP_ADMIN_EMAIL}" \
-        --locale=en_US
-
-    wp language core install en_US --allow-root
-    wp site switch-language en_US --allow-root
+    bash   
+        wp core install \
+            --allow-root \
+            --url="${WP_PATH}" \
+            --title="${WP_TITLE}" \
+            --admin_user="${WP_ADMIN_USER}" \
+            --admin_password="${WP_ADMIN_PASS}" \
+            --admin_email="${WP_ADMIN_EMAIL}" \
+            --locale=en_US
+        wp language core install en_US --allow-root
+        wp site switch-language en_US --allow-root
+        wp option update WPLANG "" --allow-root
+        wp config set WPLANG "" --allow-root
 else
     echo "✅ WordPress already installed"
 fi
