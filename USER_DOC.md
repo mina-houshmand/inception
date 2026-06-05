@@ -1,96 +1,219 @@
-# Inception User Documentation
+# USER DOCUMENTATION — Inception Project
 
-## Purpose
+## Overview
 
-This project runs a small web infrastructure with three services:
+This project deploys a small web infrastructure composed of:
 
-- NGINX as the HTTPS entry point
-- WordPress as the website backend
-- MariaDB as the database
+- NGINX (HTTPS entry point)
+- WordPress (web application)
+- MariaDB (database backend)
 
-The stack is started with Docker Compose and all persistent data is stored in the host data directory configured by the project.
+The entire stack is managed using Docker Compose, and all services run in separate containers. Persistent data is stored using Docker volumes on the host machine.
 
-## Start and Stop
+---
 
-Start the stack:
+## Requirements
+
+- Docker and Docker Compose installed on the system
+- `make` available (Makefile provided in the project)
+
+---
+
+## Project Structure (User View)
+
+- Website is served over HTTPS only
+- HTTP (port 80) is disabled
+- WordPress is automatically configured at startup
+- Data persists between container restarts
+
+---
+
+## Start the Stack
+
+To build and start all services:
 
 ```bash
 make up
-```
+````
 
-Stop the stack:
+This will:
+
+* Build Docker images (if needed)
+* Create and start containers
+* Set up the WordPress database
+* Expose the website via HTTPS
+
+---
+
+## Stop the Stack
+
+To stop all running services:
 
 ```bash
 make down
 ```
 
-Remove containers and volumes when you want a clean reset:
+This stops containers but keeps volumes (data is preserved).
+
+---
+
+## Full Reset (Clean State)
+
+To remove containers, networks, and volumes:
 
 ```bash
 make fclean
 ```
 
+⚠️ This will delete all persistent data, including the database and WordPress content.
+
+---
+
 ## Access the Website
 
-Open the website in a browser with HTTPS:
+Once the stack is running, open:
 
 ```text
 https://mhoushma.42.fr
 ```
 
-log in in with user and admin:
-```
+> The site is only accessible via HTTPS (port 443).
+
+If your browser shows a security warning, accept the self-signed certificate.
+
+---
+
+## WordPress Admin Panel
+
+Access the administration interface:
+
+```text
 https://mhoushma.42.fr/wp-admin
 ```
 
-Only port 443 should be reachable from outside. HTTP on port 80 should not be used.
+### Login
 
-## Access the WordPress Admin Panel
+Use the administrator credentials defined in the `.env` file.
 
-Use the administrator credentials defined in the project environment file to sign in.
+After login, you can:
 
-After signing in, the admin dashboard is available from the WordPress menu or by visiting the admin path shown by WordPress.
+* Create and edit posts
+* Manage comments
+* Change website settings
+* Install themes and plugins (if enabled)
+
+---
 
 ## Credentials
 
-The project reads its credentials from the environment file used by Docker Compose.
+All credentials are stored in the `.env` file used by Docker Compose.
 
-- Do not commit real passwords into documentation
-- Keep the `.env` file private
-- If credentials are changed, rebuild and restart the stack
+Important rules:
 
-## Basic Checks
-
-Use these checks if something looks wrong:
+* Do NOT commit `.env` to the repository
+* Passwords must remain private
+* Changes in credentials require rebuilding the stack:
 
 ```bash
+make fclean
 make up
-docker compose -f srcs/docker-compose.yml ps
-docker ps
-docker volume ls
 ```
 
-Useful troubleshooting commands:
+---
+
+## Basic Health Checks
+
+If something is not working correctly, you can verify the stack:
+
+```bash
+docker compose -f srcs/docker-compose.yml ps
+docker ps
+```
+
+Check running containers:
+
+* nginx
+* wordpress
+* mariadb
+
+---
+
+## Logs (for debugging)
+
+If needed, check service logs:
 
 ```bash
 docker compose -f srcs/docker-compose.yml logs -f
-docker logs nginx
-docker logs site
-docker logs db
 ```
 
-## Live Check Guide
+Or individually:
 
-Use this sequence to verify the project manually during a defense:
+```bash
+docker logs nginx
+docker logs wordpress
+docker logs mariadb
+```
 
-1. Run `make up`.
-2. Open `https://mhoushma.42.fr` in a browser.
-3. Confirm the WordPress site loads and you do not see the WordPress installation screen.
-4. Try `http://mhoushma.42.fr` and confirm it does not serve the site.
-5. Check that the admin panel can be reached with the administrator account.
-6. Create a comment or edit content from the dashboard to prove the site is writable.
-7. Check that the database and website data remain after restarting the stack.
+---
+
+## Live Verification (Defense Checklist)
+
+During evaluation, verify the following:
+
+1. Start the stack:
+
+   ```bash
+   make up
+   ```
+
+2. Open the website:
+
+   * [https://mhoushma.42.fr](https://mhoushma.42.fr)
+
+3. Confirm:
+
+   * WordPress homepage loads correctly
+   * You are NOT on installation page
+
+4. Test HTTPS-only rule:
+
+   * [http://mhoushma.42.fr](http://mhoushma.42.fr) should NOT work
+
+5. Login to admin panel:
+
+   * [https://mhoushma.42.fr/wp-admin](https://mhoushma.42.fr/wp-admin)
+
+6. Perform a change:
+
+   * Create a post or comment
+
+7. Restart stack:
+
+   ```bash
+   make down
+   make up
+   ```
+
+   Confirm data is still present
+
+---
 
 ## Data Persistence
 
-Website and database data are stored in the host data directories managed by Docker volumes. That means content should survive container restarts and recreation of the stack.
+All WordPress and MariaDB data are stored using Docker volumes on the host system.
+
+This ensures:
+
+* Data survives container restarts
+* Data survives image rebuilds
+* Website content remains persistent
+
+---
+
+## Notes
+
+* Only HTTPS (port 443) is exposed externally
+* HTTP (port 80) is disabled for security
+* Each service runs in its own container
+* Docker Compose handles networking between services
+
